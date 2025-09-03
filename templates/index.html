@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fortune Cookie</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            padding: 50px; 
+        }
+        .cookie-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px; /* space between cookie and text */
+            margin-top: 20px;
+        }
+        img { 
+            max-width: 250px; 
+            cursor: pointer; 
+            transition: transform 0.2s; 
+        }
+        img:hover { 
+            transform: scale(1.05); 
+        }
+        .break-text {
+            font-size: 1.2rem;
+            color: #d2691e;
+            font-weight: bold;
+        }
+        input { 
+            padding: 10px; 
+            margin: 10px; 
+        }
+        h2 { 
+            margin-top: 20px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>🥠 Fortune Cookie</h1>
+    
+    <input type="text" id="nameInput" placeholder="Enter your name" required>
+    
+    <div class="cookie-container">
+        <img id="cookie" src="{{ url_for('static', filename='cookie_before.jpg') }}" alt="Fortune Cookie">
+        <span class="break-text">(Break Me!)</span>
+    </div>
+    
+    <h2 id="fortuneText"></h2>
+    
+    <script>
+        const cookie = document.getElementById("cookie");
+        const fortuneText = document.getElementById("fortuneText");
+        const nameInput = document.getElementById("nameInput");
+
+        cookie.addEventListener("click", async () => {
+            const name = nameInput.value.trim();
+            if (!name) {
+                alert("Please enter your name first!");
+                return;
+            }
+
+            // Call backend for fortune
+            const response = await fetch("/fortune", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name })
+            });
+            
+            const data = await response.json();
+            cookie.src = "{{ url_for('static', filename='cookie_after.jpg') }}"; // change image
+            fortuneText.textContent = data.fortune;
+        });
+    </script>
+</body>
+</html>
